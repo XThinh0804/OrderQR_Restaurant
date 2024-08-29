@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.myproject.javaweb_restaurant.controller.BaseController;
 import com.myproject.javaweb_restaurant.dto.Cart;
@@ -54,11 +55,10 @@ public class CartController extends BaseController {
 			cart = (Cart) session.getAttribute("cart");
 
 			// Kiểm tra xem món ăn có trong giỏ hàng hay chưa
-			int index = cart.findProductById(cartFood.getId());
+			int index = cart.findFoodById(cartFood.getId());
 			if (index != -1) {// Sản phẩm đã có trong giỏ hàng
 				cart.getCartFoods().get(index).updateQuantity(cartFood.getQuantity());
 			} else {
-				// Lấy sản phẩm trong db product
 				Food dbfood = foodService.getById(cartFood.getId());
 				cartFood.setImage(dbfood.getImage());
 				cartFood.setPrice(dbfood.getPrice());
@@ -67,7 +67,7 @@ public class CartController extends BaseController {
 			}
 			jsonResult.put("code", "200");
 			jsonResult.put("message", "Đã thêm món ăn vào giỏ hàng");
-			jsonResult.put("totalCartProducts", cart.totalCartFoods());
+			jsonResult.put("totalCartFoods", cart.totalCartFoods());
 		}
 		return ResponseEntity.ok(jsonResult);
 	}
@@ -102,14 +102,14 @@ public class CartController extends BaseController {
 		return str;
 	}
 
-	@RequestMapping(value = "/update-product-quantity", method = RequestMethod.POST)
-	ResponseEntity<Map<String, Object>> updateProductQuantity(@RequestBody CartFood cartFood,
+	@RequestMapping(value = "/update-food-quantity", method = RequestMethod.POST)
+	ResponseEntity<Map<String, Object>> updateFoodQuantity(@RequestBody CartFood cartFood,
 			final HttpServletRequest request) {
 		Map<String, Object> jsonResult = new HashMap<String, Object>();
 		HttpSession session = request.getSession();
 		if (session.getAttribute("cart") != null) {
 			Cart cart = (Cart) session.getAttribute("cart");
-			int index = cart.findProductById(cartFood.getId());
+			int index = cart.findFoodById(cartFood.getId());
 			if (index != -1) {
 				// Kiểm tra trường hợp bấm nút - (giảm)
 				if (cartFood.getQuantity().intValue() == -1) {
@@ -124,7 +124,7 @@ public class CartController extends BaseController {
 			jsonResult.put("totalPrice", toCurrency(cart.getCartFoods().get(index).totalPrice()));
 			jsonResult.put("totalCartFoods", cart.totalCartFoods());
 			jsonResult.put("totalCartPrice", toCurrency(cart.totalCartPrice()));
-			jsonResult.put("productId", cartFood.getId());
+			jsonResult.put("foodId", cartFood.getId());
 		}
 		return ResponseEntity.ok(jsonResult);
 	}
@@ -132,8 +132,8 @@ public class CartController extends BaseController {
 	private OrderService orderService;
 	@Autowired
 	private OrderStatusService orderStatusService;
-	@RequestMapping(value = "/place-order", method = RequestMethod.POST)
-	public ResponseEntity<Map<String, Object>> placeOrder(@RequestBody User user, HttpServletRequest request) {
+	@RequestMapping(value = "/place-order/{tableNumber}", method = RequestMethod.POST)
+	public ResponseEntity<Map<String, Object>> placeOrder(@RequestBody User user, HttpServletRequest request,@PathVariable("tableNumber") String tableNumber) {
 		Map<String, Object> jsonResult = new HashMap<String, Object>();
 		if (user.getName().trim() == null || user.getName().length() <= 0) {
 			jsonResult.put("message", "Bạn chưa nhập tên!");
@@ -159,7 +159,7 @@ public class CartController extends BaseController {
 				// Lưu đơn hàng vào db
 				OrderStatus orderStatus = orderStatusService.getById(1);
 				order.setOrder_status(orderStatus);
-				order.setDiningTable(cart.getTableNumber());
+				order.setDiningTable(tableNumber);
 				order.setCreateDate(new Date());
 				order.setTotal(cart.totalCartPrice());
 				order.setCustomer_name(user.getName());
@@ -167,8 +167,8 @@ public class CartController extends BaseController {
 				orderService.saveOrder(order);
 				jsonResult.put("message", "Giỏ hàng của bạn đã được lưu");
 				//Xóa giỏ hàng
-				cart.setCartFoods(null);
-				session.setAttribute("cart", cart);
+			
+				session.setAttribute("cart", new Cart());
 			}
 		}
 		return ResponseEntity.ok(jsonResult);

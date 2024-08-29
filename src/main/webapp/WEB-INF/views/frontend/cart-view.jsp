@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${title}</title>
 <link rel="icon" type="image/png" sizes="16x16"
-	href="https://i.pinimg.com/236x/56/d9/0d/56d90d66b6ed70bcd57cf711012338ec.jpg" />
+	href="https://cdn.iconscout.com/icon/free/png-256/free-restaurant-icon-download-in-svg-png-gif-file-formats--hotel-food-cafe-canteen-building-pack-buildings-icons-1267764.png?f=webp">
 <!-- Favicon -->
 <link href="${resource}/frontend/new/frontend/img/favicon.ico" rel="icon">
 
@@ -76,11 +76,11 @@
 											<td>${cartFood.name }</td>
 											<td align="center">
 												<button type="button"
-													onclick="updateProductQuantity(${cartFood.id }, -1)"
+													onclick="updateFoodQuantity(${cartFood.id }, -1)"
 													value="-">-</button> <strong><span
-													id="productQuantity_${cartFood.id }">${cartFood.quantity }</span></strong>
+													id="foodQuantity_${cartFood.id }">${cartFood.quantity }</span></strong>
 												<button type="button"
-													onclick="updateProductQuantity(${cartFood.id }, 1)"
+													onclick="updateFoodQuantity(${cartFood.id }, 1)"
 													value="+">+</button>
 											</td>
 											<td class="align-middle">
@@ -123,7 +123,7 @@
 						<h1 style="margin-left: 200px">Thông tin khách hàng</h1>
 					</div>
 				</div>
-				<form action="${resource }/cart-view" method="get">
+				<form action="${resource}/place-order/${tableNumber}" method="post">
 					<div class="row">
 
 						<div class="col-12">
@@ -134,7 +134,7 @@
 
 											<div class="col-md-12">
 												<div class="form-group mb-4">
-													<label for="name">Customer name (*)</label> <input
+													<label for="name">Tên khách hàng:</label> <input
 														type="text" class="form-control" id="txtName"
 														name="txtName" placeholder="Tên của bạn" />
 												</div>
@@ -145,19 +145,9 @@
 
 											<div class="col-md-12">
 												<div class="form-group mb-4">
-													<label for="mobile">Customer mobile (*)</label> <input
+													<label for="txtMobile">Số điện thoại:</label> <input
 														type="text" class="form-control" id="txtMobile"
 														name="txtMobile" placeholder="Số điện thoại"/>
-												</div>
-											</div>
-										</div>
-										<div class="row">
-
-											<div class="col-md-12">
-												<div class="form-group mb-4">
-													<label for="mobile">Bàn số:</label> <input
-														type="text" class="form-control" id="txtTableNumber"
-														name="txtTableNumber" value="${tableNumber}"/>
 												</div>
 											</div>
 										</div>
@@ -167,8 +157,8 @@
 													<a href="${resource }/order/${tableNumber}"
 														class="btn btn-primary active" role="button"
 														aria-pressed="true">Quay lại</a>
-													<button class="btn btn-primary text-white" onclick="_placeOrder()">
-														Đặt món</button>
+													<a class="btn btn-primary  active" onclick="_placeOrder()">
+														Đặt món</a>
 
 												</div>
 											</div>
@@ -199,27 +189,27 @@
 	<!-- Template Javascript -->
 	<script src="${resource}/frontend/new/frontend/js/main.js"></script>
 	<script type="text/javascript">
-		updateProductQuantity = function(_productId, _quantity) {
+		updateFoodQuantity = function(_FoodId, _quantity) {
 			let data = {
-				id : _productId, //lay theo id
+				id : _FoodId, //lay theo id
 				quantity : _quantity
 			};
 
 			//$ === jQuery
 			jQuery.ajax({
-				url : "/update-product-quantity",
+				url : "/update-food-quantity",
 				type : "POST",
 				contentType : "application/json",
 				data : JSON.stringify(data),
 				dataType : "json", //Kieu du lieu tra ve tu controller la json
 
 				success : function(jsonResult) {
-					let totalProducts = jsonResult.totalCartProducts; 
+					let totalFoods = jsonResult.totalCartFoods; 
 					//Viet lai so luong sau khi bam nut -, +
-					$("#productQuantity_" + jsonResult.productId).html(jsonResult.newQuantity); 
+					$("#foodQuantity_" + jsonResult.foodId).html(jsonResult.newQuantity); 
 					$("#totalCartPriceId").html(jsonResult.totalCartPrice); 
-					$("#totalPrice_" + jsonResult.productId).html(jsonResult.totalPrice);
-					$("#totalCartProducts").html(jsonResult.totalCartProducts);
+					$("#totalPrice_" + jsonResult.foodId).html(jsonResult.totalPrice);
+					$("#totalCartFoods").html(jsonResult.totalCartFoods);
 				},
 
 				error : function(jqXhr, textStatus, errorMessage) {
@@ -234,14 +224,13 @@
 			//javascript object
 			let data = {				
 				name : jQuery("#txtName").val(),
-				email : jQuery("#txtEmail").val(), //Get by Id
 				mobile : jQuery("#txtMobile").val(),
-				address : jQuery("#txtAddress").val(),
+				tableNumber: jQuery("#txtTableNumber").val(),
 			};
 			
 			//$ === jQuery
 			jQuery.ajax({
-				url : "/place-order",
+				url : "/place-order/${tableNumber}",
 				type : "POST",
 				contentType: "application/json",
 				data : JSON.stringify(data),

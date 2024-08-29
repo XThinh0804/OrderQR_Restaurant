@@ -8,9 +8,9 @@ import java.util.ArrayList;
 public class Cart {
 	private ArrayList<CartFood> cartFoods = new ArrayList<CartFood>();
 	private String tableNumber;
-	public int findProductById(int productId) {
+	public int findFoodById(int foodId) {
 		for(int index = 0; index < this.cartFoods.size(); index ++) {
-			if(cartFoods.get(index).getId() == productId) {
+			if(cartFoods.get(index).getId() == foodId) {
 				return index;
 			}
 		}
