@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Built-By: thinh
+Build-Jdk: 22.0.2
+Implementation-Title: javaweb_restaurant Maven Webapp
+Implementation-Version: 0.0.1-SNAPSHOT
+Implementation-Vendor-Id: com.myproject
+Implementation-URL: http://maven.apache.org
+Created-By: Maven Integration for Eclipse
+
