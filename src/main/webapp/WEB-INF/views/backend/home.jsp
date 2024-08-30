@@ -12,7 +12,8 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="${resource}/backend/assets/images/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16"
+	href="https://cdn.iconscout.com/icon/free/png-256/free-restaurant-icon-download-in-svg-png-gif-file-formats--hotel-food-cafe-canteen-building-pack-buildings-icons-1267764.png?f=webp">
     <title>${title }</title>
     <!-- variables -->
     <jsp:include page="/WEB-INF/views/common/variables.jsp"></jsp:include>

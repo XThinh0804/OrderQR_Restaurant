@@ -16,7 +16,7 @@
 	<meta name="author" content="">
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16"
-		href="${resource}/admin/assets/images/favicon.png">
+	href="https://cdn.iconscout.com/icon/free/png-256/free-restaurant-icon-download-in-svg-png-gif-file-formats--hotel-food-cafe-canteen-building-pack-buildings-icons-1267764.png?f=webp">
 	<title>${title}</title>
 	
 	<!-- variables -->
@@ -61,8 +61,7 @@
 				<div class="row">
 					<div class="col-12 align-self-center">
 						<h2
-							class="page-title text-truncate text-dark font-weight-medium mb-1">Order
-							Tracking</h2>
+							class="page-title text-truncate text-dark font-weight-medium mb-1">Danh sách đơn hàng</h2>
 					</div>
 				</div>
 			</div>
@@ -87,38 +86,13 @@
 										<div class="table-responsive">
 											
 											<!-- Tìm kiếm -->
-											<div class="row">
-												<div class="col-md-2">
-													<div class="form-group mb-4">
-				                                        <select class="form-control"
-															id="status" name="status">
-																<option value="2">Tất cả đơn hàng</option>
-																<option value="1">Đơn hàng đã giao</option>
-																<option value="0">Đơn hàng chưa giao</option>
-														</select>
-													</div>
-												</div>
-												
-												<div class="col-md-2">
-													<input class="form-control" type="date" 
-														id="beginDate" name="beginDate"/>		
-												</div>
-												<div class="col-md-2">
-													<input class="form-control"
-																	type="date" id="endDate" name="endDate" />		
-												</div>
-												
-												<div class="col-md-3">
-													<input type="text" class="form-control" id="keyword"
-															name="keyword" placeholder="Search keyword" />		
-												</div>
-												
+											<div class="row" style="display: none;">
 												<div class="col-md-1">
 													<button type="submit" id="btnSearch" name="btnSearch" class="btn btn-primary">Search</button>
 												</div>
 												<div class="col-md-1">
 													<input id="page" name="page" type="hidden"
-																		class="form-control" value="${saleOrderSearch.currentPage}" />
+																		class="form-control" value="${orderSearch.currentPage}" />
 												</div>
 											</div>
 											<!-- Hết tìm kiếm -->
@@ -128,18 +102,14 @@
 												<thead>
 													<tr align="center">
 														<th scope="col">No.</th>
-														<th scope="col">Code</th>
-														<th scope="col">Customer</th>
-														<th scope="col">Mobile</th>
-														<th scope="col">Address</th>
-														<th scope="col">Payment</th>
-														<th scope="col">Create by</th>
-														<!-- <th scope="col">Update by</th> -->
-														<th scope="col">Create date</th>
-														<th scope="col">Delivery date</th>
-														<th scope="col">Status</th>
-														<th scope="col">Edit</th>
-														<th scope="col">Delete</th>
+														<th scope="col">Thời gian đặt</th>
+														<th scope="col">Bàn</th>
+														<th scope="col">Người đặt</th>
+														<th scope="col">Số điện thoại</th>
+														<th scope="col">Tổng tiền</th>
+														<th scope="col">Trạng thái</th>
+														<th scope="col">Xem chi tiết</th>
+														<th scope="col"></th>
 	
 													</tr>
 												</thead>
@@ -148,40 +118,36 @@
 														varStatus="loop">
 														<tr>
 															<th scope="row">${loop.index + 1 }</th>
-															<td>${order.customer_name }</td>
-															<td align="center">${order.customer_mobile }</td>
-															<td align="right"><fmt:formatNumber
-																	value="${order.total }" minFractionDigits="0"></fmt:formatNumber>
-															</td>
-															<td><fmt:formatDate pattern="dd-MM-yyyy"
+															<td class="text-center"><fmt:formatDate pattern="dd-MM-yyyy"
 																	value="${order.createDate}" /></td>
-															<td><fmt:formatDate pattern="dd-MM-yyyy"
-																	value="${order.updateDate}" /></td>
+															<td class="text-center">${order.diningTable}</td>
+															<td class="text-center">${order.customer_name }</td>
+															<td align="center" class="text-center">${order.customer_mobile }</td>
+															<td align="right" class="text-center"><fmt:formatNumber
+																	value="${order.total }" minFractionDigits="0"></fmt:formatNumber>
+																	<span>vnđ</span>
+															</td>
 	
-															<td>${order.order_status.name }</td>
+															<td class="text-center">${order.order_status.name }</td>
 	
-															<td><a
-																href="${resource}/order-detail/${saleOrder.id }"
+															<td class="text-center"><a
+																href="${resource}/admin/order/detail/${order.id }"
 																role="button" class="btn btn-primary">Chi tiết</a>
-															<td><a
-																href="${resource}/delete-product/${saleOrder.id }"
-																role="button" class="btn btn-secondary">Xóa</a>
+															<td class="text-center">
+															<a
+																href="${resource}/admin/order/edit/${order.id }"
+																role="button" class="btn btn-primary">Sửa</a>
+															<a
+																href="${resource}/admin/order/delete/${order.id }"
+																role="button" class="btn btn-danger">Xóa</a>
+															</td>
+																
 														</tr>
 													</c:forEach>
 												</tbody>
 											</table>
 
 											<div class="row">
-												<div class="col-md-6">
-													<div class="form-group mb-4">
-														<h3>
-															Total sales:
-															<fmt:formatNumber value="${totalSales }"
-																minFractionDigits="0"></fmt:formatNumber>(vnđ)
-														</h3>
-													</div>
-												</div>
-	
 												<div class="col-md-6" >
 													<!-- Phan trang -->
 													<div class="pagination float-right">
@@ -221,9 +187,6 @@
 	
 	<script type="text/javascript">
 		$( document ).ready(function() {
-			//Dat gia tri cua status ung voi dieu kien search truoc do
-			$("#status").val(${saleOrderSearch.status});
-			
 			$("#paging").pagination({
 				currentPage: ${saleOrderSearch.currentPage}, //Trang hien tai
 				items: ${saleOrderSearch.totalItems}, //Tong so don hang (total sale orders)
